@@ -14,6 +14,7 @@ from homeassistant.helpers.selector import (
     NumberSelector,
     NumberSelectorConfig,
     NumberSelectorMode,
+    SelectOptionDict,
     SelectSelector,
     SelectSelectorConfig,
     SelectSelectorMode,
@@ -328,7 +329,7 @@ class GroceryDealsOptionsFlowHandler(config_entries.OptionsFlow):
                 ): SelectSelector(
                     SelectSelectorConfig(
                         options=[
-                            {"value": k, "label": v}
+                            SelectOptionDict(value=k, label=v)
                             for k, v in provider_options.items()
                         ],
                         multiple=True,

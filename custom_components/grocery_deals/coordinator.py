@@ -115,6 +115,17 @@ class GroceryDealsCoordinator(DataUpdateCoordinator[dict[str, Any]]):
                                     )
                                     offers_found = True
 
+                        # Regular catalog products if searched via filter in REWE
+                        regular_map = cdata.get("regular_products_by_filter", {})
+                        for _pfilter, reg_items in regular_map.items():
+                            for r_item in reg_items:
+                                if isinstance(r_item, dict):
+                                    all_offers.append(
+                                        self._normalize_offer(
+                                            r_item, domain, store_label, entry_title
+                                        )
+                                    )
+
                 # 2. Inspect entity state attributes as fallback
                 if not offers_found:
                     for state in self.hass.states.async_all("sensor"):
@@ -122,9 +133,11 @@ class GroceryDealsCoordinator(DataUpdateCoordinator[dict[str, Any]]):
                             state.entity_id.startswith(f"sensor.{domain}_")
                             or domain in state.entity_id
                         ):
-                            discounts = state.attributes.get(
-                                "discounts"
-                            ) or state.attributes.get("offers")
+                            discounts = (
+                                state.attributes.get("discounts")
+                                or state.attributes.get("offers")
+                                or state.attributes.get("matches")
+                            )
                             if isinstance(discounts, list):
                                 for item in discounts:
                                     if isinstance(item, dict):
