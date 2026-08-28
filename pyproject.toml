@@ -1,6 +1,6 @@
 [project]
 name = "ha-grocery-deals"
-version = "1.0.1-dev0"
+version = "1.0.2-dev0"
 description = "Home Assistant integration for Grocery Deals supermarket price comparison and discount aggregator."
 authors = [
     {name = "FaserF", email = "github@fabiseitz.de"}

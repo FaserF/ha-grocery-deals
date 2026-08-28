@@ -9,5 +9,5 @@
   "integration_type": "hub",
   "iot_class": "calculated",
   "issue_tracker": "https://github.com/FaserF/ha-grocery-deals/issues",
-  "version": "1.0.1-dev0"
+  "version": "1.0.2-dev0"
 }
