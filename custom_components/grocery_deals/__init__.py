@@ -3,13 +3,15 @@
 from __future__ import annotations
 
 import logging
+import re
 from typing import Any
 
 from homeassistant import config_entries, core
 from homeassistant.const import EVENT_HOMEASSISTANT_STARTED
 from homeassistant.helpers import config_validation as cv
+from homeassistant.helpers import entity_registry as er
 
-from .const import DOMAIN, PLATFORMS, SUPPORTED_INTEGRATIONS
+from .const import CONF_PRODUCT_FILTERS, DOMAIN, PLATFORMS, SUPPORTED_INTEGRATIONS
 from .coordinator import GroceryDealsCoordinator
 
 _LOGGER = logging.getLogger(__name__)
@@ -85,7 +87,33 @@ async def async_setup_entry(
 async def _async_update_options(
     hass: core.HomeAssistant, entry: config_entries.ConfigEntry
 ) -> None:
-    """Reload the entry when options change."""
+    """Remove stale filter entities and reload the entry when options change."""
+    coordinator = hass.data.get(DOMAIN, {}).get(entry.entry_id)
+    old_filters: list[str] = []
+    if coordinator is not None:
+        old_filters = list(coordinator.product_filters)
+
+    new_filters: list[str] = [
+        f.strip() for f in entry.options.get(CONF_PRODUCT_FILTERS, []) if f.strip()
+    ]
+    removed_filters = [f for f in old_filters if f not in new_filters]
+
+    if removed_filters:
+        ent_reg = er.async_get(hass)
+        for filter_word in removed_filters:
+            slug = (
+                re.sub(r"[^a-zA-Z0-9_]+", "_", filter_word.lower()).strip("_") or "deal"
+            )
+            unique_id = f"grocery_deals_filter_{slug}"
+            entity_entry = ent_reg.async_get_entity_id("sensor", DOMAIN, unique_id)
+            if entity_entry:
+                ent_reg.async_remove(entity_entry)
+                _LOGGER.debug(
+                    "Removed stale filter entity for '%s' (unique_id=%s)",
+                    filter_word,
+                    unique_id,
+                )
+
     await hass.config_entries.async_reload(entry.entry_id)
 
 
