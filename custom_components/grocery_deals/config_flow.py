@@ -54,6 +54,21 @@ class GroceryDealsConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
         return detected, missing
 
+    def _collect_existing_supermarket_filters(self) -> list[str]:
+        """Collect and deduplicate configured product filters from all supermarket integrations."""
+        found_filters: list[str] = []
+        for domain in SUPPORTED_INTEGRATIONS:
+            for entry in self.hass.config_entries.async_entries(domain):
+                entry_filters = entry.options.get(
+                    CONF_PRODUCT_FILTERS, entry.data.get(CONF_PRODUCT_FILTERS, [])
+                )
+                if isinstance(entry_filters, list):
+                    for f in entry_filters:
+                        clean_f = str(f).strip()
+                        if clean_f and clean_f not in found_filters:
+                            found_filters.append(clean_f)
+        return found_filters
+
     async def async_step_user(
         self, user_input: dict[str, Any] | None = None
     ) -> config_entries.ConfigFlowResult:
@@ -62,6 +77,7 @@ class GroceryDealsConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         self._abort_if_unique_id_configured()
 
         detected, missing = self._get_detected_integrations()
+        errors: dict[str, str] = {}
 
         if user_input is not None:
             raw_filters = user_input.get(CONF_PRODUCT_FILTERS, [])
@@ -78,21 +94,26 @@ class GroceryDealsConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             else:
                 product_filters = []
 
-            return self.async_create_entry(
-                title="Grocery Deals",
-                data={
-                    CONF_PRODUCT_FILTERS: product_filters,
-                    CONF_UPDATE_INTERVAL: int(
-                        user_input.get(CONF_UPDATE_INTERVAL, DEFAULT_UPDATE_INTERVAL)
-                    ),
-                    CONF_AUTO_DETECT_PROVIDERS: bool(
-                        user_input.get(CONF_AUTO_DETECT_PROVIDERS, True)
-                    ),
-                    CONF_ENABLED_PROVIDERS: user_input.get(
-                        CONF_ENABLED_PROVIDERS, detected
-                    ),
-                },
-            )
+            if not product_filters:
+                errors["base"] = "missing_filters"
+            else:
+                return self.async_create_entry(
+                    title="Grocery Deals",
+                    data={
+                        CONF_PRODUCT_FILTERS: product_filters,
+                        CONF_UPDATE_INTERVAL: int(
+                            user_input.get(
+                                CONF_UPDATE_INTERVAL, DEFAULT_UPDATE_INTERVAL
+                            )
+                        ),
+                        CONF_AUTO_DETECT_PROVIDERS: bool(
+                            user_input.get(CONF_AUTO_DETECT_PROVIDERS, True)
+                        ),
+                        CONF_ENABLED_PROVIDERS: user_input.get(
+                            CONF_ENABLED_PROVIDERS, detected
+                        ),
+                    },
+                )
 
         # Build informative placeholders with GitHub links
         detected_text = (
@@ -103,28 +124,27 @@ class GroceryDealsConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             or "_None detected yet._"
         )
 
-        missing_text = (
-            "\n".join(
+        missing_section = ""
+        if missing:
+            missing_items = "\n".join(
                 f"❌ **[{SUPPORTED_INTEGRATIONS[d]['name']}]({SUPPORTED_INTEGRATIONS[d]['github']})** - {SUPPORTED_INTEGRATIONS[d]['description']}"
                 for d in missing
             )
-            or "_All supported supermarket integrations are installed!_"
-        )
+            missing_section = f"\n\n### 📦 Missing / Additional Supported Integrations:\n{missing_items}"
+
+        detected_note = ""
+        if len(detected) < 2:
+            detected_note = "\n\n*(Note: At least 2 supermarket integrations should be installed and configured for optimal deal comparison.)*"
+
+        initial_filters = self._collect_existing_supermarket_filters()
 
         schema = vol.Schema(
             {
-                vol.Optional(
-                    CONF_PRODUCT_FILTERS, default=["Monster Energy", "Butter", "Kaffee"]
+                vol.Required(
+                    CONF_PRODUCT_FILTERS, default=initial_filters
                 ): SelectSelector(
                     SelectSelectorConfig(
-                        options=[
-                            "Monster Energy",
-                            "Butter",
-                            "Kaffee",
-                            "Milch",
-                            "Bier",
-                            "Schokolade",
-                        ],
+                        options=initial_filters,
                         multiple=True,
                         custom_value=True,
                         mode=SelectSelectorMode.DROPDOWN,
@@ -150,10 +170,11 @@ class GroceryDealsConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         return self.async_show_form(
             step_id="user",
             data_schema=schema,
+            errors=errors,
             description_placeholders={
                 "detected_integrations": detected_text,
-                "missing_integrations": missing_text,
-                "detected_count": str(len(detected)),
+                "missing_section": missing_section,
+                "detected_note": detected_note,
             },
         )
 
@@ -175,11 +196,13 @@ class GroceryDealsConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     ) -> config_entries.ConfigFlowResult:
         """Confirm auto-discovery entry creation."""
         detected, _ = self._get_detected_integrations()
+        initial_filters = self._collect_existing_supermarket_filters()
+
         if user_input is not None:
             return self.async_create_entry(
                 title="Grocery Deals",
                 data={
-                    CONF_PRODUCT_FILTERS: ["Monster Energy", "Butter", "Kaffee"],
+                    CONF_PRODUCT_FILTERS: initial_filters,
                     CONF_UPDATE_INTERVAL: DEFAULT_UPDATE_INTERVAL,
                     CONF_AUTO_DETECT_PROVIDERS: True,
                     CONF_ENABLED_PROVIDERS: detected,
@@ -286,13 +309,15 @@ class GroceryDealsOptionsFlowHandler(config_entries.OptionsFlow):
             or "_None detected yet._"
         )
 
-        missing_text = (
-            "\n".join(
+        missing_section = ""
+        if missing:
+            missing_items = "\n".join(
                 f"❌ **[{SUPPORTED_INTEGRATIONS[d]['name']}]({SUPPORTED_INTEGRATIONS[d]['github']})** - {SUPPORTED_INTEGRATIONS[d]['description']}"
                 for d in missing
             )
-            or "_All supported supermarket integrations are installed!_"
-        )
+            missing_section = (
+                f"\n\n### 📦 Missing Supermarket Integrations:\n{missing_items}"
+            )
 
         provider_options = {
             d: SUPPORTED_INTEGRATIONS[d]["name"] for d in SUPPORTED_INTEGRATIONS
@@ -344,6 +369,6 @@ class GroceryDealsOptionsFlowHandler(config_entries.OptionsFlow):
             data_schema=options_schema,
             description_placeholders={
                 "detected_integrations": detected_text,
-                "missing_integrations": missing_text,
+                "missing_section": missing_section,
             },
         )

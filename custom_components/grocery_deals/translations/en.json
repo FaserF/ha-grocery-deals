@@ -4,7 +4,7 @@
     "step": {
       "user": {
         "title": "Grocery Deals Supermarket Aggregator",
-        "description": "Compare deals and track discounts across all your configured supermarket integrations.\n\n### 🛒 Detected Supermarket Integrations:\n{detected_integrations}\n\n### 📦 Missing / Additional Supported Integrations:\n{missing_integrations}\n\n*(Note: At least 2 supermarket integrations must be installed and configured for optimal deal comparison.)*",
+        "description": "Compare deals and track discounts across all your configured supermarket integrations.\n\n### 🛒 Detected Supermarket Integrations:\n{detected_integrations}{missing_section}{detected_note}",
         "data": {
           "product_filters": "Product Search Filters (e.g. Monster Energy, Butter)",
           "update_interval": "Update Interval (hours, min 1, max 24)",
@@ -16,6 +16,9 @@
         "description": "We found **{detected_count}** active supermarket integration(s) on your Home Assistant:\n\n**{detected_stores}**\n\nWould you like to enable the **Grocery Deals** smart price comparison hub?"
       }
     },
+    "error": {
+      "missing_filters": "Please enter at least one product filter keyword to track."
+    },
     "abort": {
       "already_configured": "Grocery Deals hub is already configured.",
       "insufficient_supermarkets": "At least 2 supermarket integrations are required."
@@ -25,7 +28,7 @@
     "step": {
       "init": {
         "title": "Configure Grocery Deals",
-        "description": "Manage your search filters and active supermarket data sources.\n\n### 🛒 Detected Supermarket Integrations:\n{detected_integrations}\n\n### 📦 Missing Supermarket Integrations:\n{missing_integrations}",
+        "description": "Manage your search filters and active supermarket data sources.\n\n### 🛒 Detected Supermarket Integrations:\n{detected_integrations}{missing_section}",
         "data": {
           "product_filters": "Product Search Filters (e.g. Monster Energy, Butter)",
           "update_interval": "Update Interval (hours, min 1, max 24)",

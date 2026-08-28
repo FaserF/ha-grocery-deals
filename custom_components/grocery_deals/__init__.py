@@ -20,7 +20,7 @@ async def async_setup(hass: core.HomeAssistant, config: dict[str, Any]) -> bool:
     """Set up the Grocery Deals integration."""
     domain_data = hass.data.setdefault(DOMAIN, {})
 
-    async def _check_and_discover(event: core.Event | None = None) -> None:
+    async def _check_and_discover(*args: Any, **kwargs: Any) -> None:
         """Check if >=2 supermarket integrations are configured and trigger auto discovery."""
         if hass.config_entries.async_entries(DOMAIN):
             return
@@ -37,13 +37,18 @@ async def async_setup(hass: core.HomeAssistant, config: dict[str, Any]) -> bool:
                 len(detected_domains),
                 ", ".join(detected_domains),
             )
-            hass.async_create_task(
-                hass.config_entries.flow.async_init(
-                    DOMAIN,
-                    context={"source": config_entries.SOURCE_INTEGRATION_DISCOVERY},
-                    data={"detected_domains": detected_domains},
+            # Avoid triggering duplicate flows if one is already in progress
+            current_flows = hass.config_entries.flow.async_progress_by_handler(DOMAIN)
+            if not current_flows:
+                hass.async_create_task(
+                    hass.config_entries.flow.async_init(
+                        DOMAIN,
+                        context={"source": config_entries.SOURCE_INTEGRATION_DISCOVERY},
+                        data={"detected_domains": detected_domains},
+                    )
                 )
-            )
+
+    domain_data["check_and_discover"] = _check_and_discover
 
     if not domain_data.get("_discovery_registered"):
         domain_data["_discovery_registered"] = True
@@ -51,6 +56,10 @@ async def async_setup(hass: core.HomeAssistant, config: dict[str, Any]) -> bool:
             hass.async_create_task(_check_and_discover())
         else:
             hass.bus.async_listen_once(EVENT_HOMEASSISTANT_STARTED, _check_and_discover)
+
+        # Also listen whenever a new config entry is loaded / added
+        hass.bus.async_listen("config_entry_updated", _check_and_discover)
+        hass.bus.async_listen("component_loaded", _check_and_discover)
 
     return True
 

@@ -66,7 +66,6 @@ class GroceryDealsOverviewSensor(
             name="Grocery Deals Hub",
             manufacturer="FaserF",
             model="Supermarket Deals Aggregator",
-            configuration_url="https://github.com/FaserF/ha-grocery-deals",
         )
 
     @property
@@ -121,7 +120,6 @@ class GroceryDealsFilterSensor(
             name="Grocery Deals Hub",
             manufacturer="FaserF",
             model="Supermarket Deals Aggregator",
-            configuration_url="https://github.com/FaserF/ha-grocery-deals",
         )
 
     @property

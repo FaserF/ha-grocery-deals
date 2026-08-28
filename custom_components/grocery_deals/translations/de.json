@@ -4,7 +4,7 @@
     "step": {
       "user": {
         "title": "Grocery Deals Supermarkt-Preisvergleich",
-        "description": "Vergleiche Angebote und überwache Aktionspreise über alle konfigurierten Supermarkt-Integrationen hinweg.\n\n### 🛒 Erkannte Supermarkt-Integrationen:\n{detected_integrations}\n\n### 📦 Fehlende / weitere unterstützte Integrationen:\n{missing_integrations}\n\n*(Hinweis: Mindestens 2 Supermarkt-Integrationen sollten eingerichtet sein, um Angebote optimal vergleichen zu können.)*",
+        "description": "Vergleiche Angebote und überwache Aktionspreise über alle konfigurierten Supermarkt-Integrationen hinweg.\n\n### 🛒 Erkannte Supermarkt-Integrationen:\n{detected_integrations}{missing_section}{detected_note}",
         "data": {
           "product_filters": "Produkt-Suchfilter (z. B. Monster Energy, Butter)",
           "update_interval": "Aktualisierungsintervall (Stunden, min 1, max 24)",
@@ -16,6 +16,9 @@
         "description": "Es wurden **{detected_count}** aktive Supermarkt-Integration(en) in deinem Home Assistant gefunden:\n\n**{detected_stores}**\n\nMöchtest du den **Grocery Deals** Preisvergleich-Hub jetzt aktivieren?"
       }
     },
+    "error": {
+      "missing_filters": "Bitte gib mindestens ein Filterwort für die Produktüberwachung ein."
+    },
     "abort": {
       "already_configured": "Der Grocery Deals Hub ist bereits konfiguriert.",
       "insufficient_supermarkets": "Mindestens 2 Supermarkt-Integrationen sind erforderlich."
@@ -25,7 +28,7 @@
     "step": {
       "init": {
         "title": "Grocery Deals konfigurieren",
-        "description": "Verwalte deine Suchbegriffe und aktiven Supermarkt-Datenquellen.\n\n### 🛒 Erkannte Supermarkt-Integrationen:\n{detected_integrations}\n\n### 📦 Fehlende Supermarkt-Integrationen:\n{missing_integrations}",
+        "description": "Verwalte deine Suchbegriffe und aktiven Supermarkt-Datenquellen.\n\n### 🛒 Erkannte Supermarkt-Integrationen:\n{detected_integrations}{missing_section}",
         "data": {
           "product_filters": "Produkt-Suchfilter (z. B. Monster Energy, Butter)",
           "update_interval": "Aktualisierungsintervall (Stunden, min 1, max 24)",
