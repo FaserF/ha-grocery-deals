@@ -1,0 +1,11 @@
+{
+  "domain": "grocery_deals",
+  "name": "Grocery Deals",
+  "codeowners": ["@FaserF"],
+  "config_flow": true,
+  "documentation": "https://github.com/FaserF/ha-grocery-deals",
+  "integration_type": "hub",
+  "iot_class": "calculated",
+  "issue_tracker": "https://github.com/FaserF/ha-grocery-deals/issues",
+  "version": "0.1.0"
+}

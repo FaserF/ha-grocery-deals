@@ -1,0 +1,14 @@
+{
+  "name": "Grocery Deals",
+  "render_readme": true,
+  "country": [
+    "AT",
+    "CH",
+    "DE",
+    "HU",
+    "IT",
+    "SI"
+  ],
+  "zip_release": true,
+  "filename": "grocery_deals.zip"
+}

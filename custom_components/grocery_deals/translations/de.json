@@ -1,0 +1,38 @@
+{
+  "config": {
+    "flow_title": "Grocery Deals Aggregator einrichten",
+    "step": {
+      "user": {
+        "title": "Grocery Deals Supermarkt-Preisvergleich",
+        "description": "Vergleiche Angebote und überwache Aktionspreise über alle konfigurierten Supermarkt-Integrationen hinweg.\n\n### 🛒 Erkannte Supermarkt-Integrationen:\n{detected_integrations}\n\n### 📦 Fehlende / weitere unterstützte Integrationen:\n{missing_integrations}\n\n*(Hinweis: Mindestens 2 Supermarkt-Integrationen sollten eingerichtet sein, um Angebote optimal vergleichen zu können.)*",
+        "data": {
+          "product_filters": "Produkt-Suchfilter (z. B. Monster Energy, Butter)",
+          "update_interval": "Aktualisierungsintervall (Stunden, min 1, max 24)",
+          "auto_detect_providers": "Neu hinzugefügte Supermarkt-Integrationen automatisch einbinden"
+        }
+      },
+      "discovery_confirm": {
+        "title": "Supermarkt-Integrationen erkannt!",
+        "description": "Es wurden **{detected_count}** aktive Supermarkt-Integration(en) in deinem Home Assistant gefunden:\n\n**{detected_stores}**\n\nMöchtest du den **Grocery Deals** Preisvergleich-Hub jetzt aktivieren?"
+      }
+    },
+    "abort": {
+      "already_configured": "Der Grocery Deals Hub ist bereits konfiguriert.",
+      "insufficient_supermarkets": "Mindestens 2 Supermarkt-Integrationen sind erforderlich."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Grocery Deals konfigurieren",
+        "description": "Verwalte deine Suchbegriffe und aktiven Supermarkt-Datenquellen.\n\n### 🛒 Erkannte Supermarkt-Integrationen:\n{detected_integrations}\n\n### 📦 Fehlende Supermarkt-Integrationen:\n{missing_integrations}",
+        "data": {
+          "product_filters": "Produkt-Suchfilter (z. B. Monster Energy, Butter)",
+          "update_interval": "Aktualisierungsintervall (Stunden, min 1, max 24)",
+          "auto_detect_providers": "Alle erkannten Supermarkt-Integrationen automatisch einbinden",
+          "enabled_providers": "Manuell aktivierte Supermarkt-Integrationen"
+        }
+      }
+    }
+  }
+}
