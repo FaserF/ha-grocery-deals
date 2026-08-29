@@ -9,7 +9,9 @@ from typing import Any
 
 from homeassistant import config_entries
 from homeassistant.core import HomeAssistant
+from homeassistant.helpers import storage
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
+from homeassistant.util import dt as dt_util
 
 from .const import (
     CONF_AUTO_DETECT_PROVIDERS,
@@ -17,6 +19,7 @@ from .const import (
     CONF_PRODUCT_FILTERS,
     CONF_UPDATE_INTERVAL,
     DEFAULT_UPDATE_INTERVAL,
+    DOMAIN,
     SUPPORTED_INTEGRATIONS,
 )
 
@@ -55,6 +58,9 @@ class GroceryDealsCoordinator(DataUpdateCoordinator[dict[str, Any]]):
             CONF_ENABLED_PROVIDERS, list(SUPPORTED_INTEGRATIONS.keys())
         )
 
+        self.store = storage.Store(hass, 1, f"{DOMAIN}_hub")
+        self._last_success: Any = None
+
         interval_hours = config.get(CONF_UPDATE_INTERVAL, DEFAULT_UPDATE_INTERVAL)
         super().__init__(
             hass,
@@ -63,6 +69,32 @@ class GroceryDealsCoordinator(DataUpdateCoordinator[dict[str, Any]]):
             name="Grocery Deals Coordinator",
             update_interval=timedelta(hours=interval_hours),
         )
+
+    @property
+    def is_data_valid(self) -> bool:
+        """Return True if cached data is still valid for the current week (until Sunday 23:59:59)."""
+        if not self.data or not self.data.get("filters"):
+            return False
+
+        now = dt_util.now()
+        current_monday = (now - timedelta(days=now.weekday())).replace(
+            hour=0, minute=0, second=0, microsecond=0
+        )
+        if self._last_success and self._last_success >= current_monday:
+            return True
+
+        return True
+
+    async def async_load_cache(self) -> None:
+        """Load cached data from HA storage (restart-resistance)."""
+        cache = await self.store.async_load()
+        if cache and isinstance(cache, dict) and "filters" in cache:
+            self.data = cache
+            if "last_success" in cache:
+                try:
+                    self._last_success = dt_util.parse_datetime(cache["last_success"])
+                except Exception:  # noqa: BLE001
+                    self._last_success = None
 
     def get_configured_providers(self) -> dict[str, list[config_entries.ConfigEntry]]:
         """Return a mapping of detected domains to their active config entries."""
@@ -281,8 +313,13 @@ class GroceryDealsCoordinator(DataUpdateCoordinator[dict[str, Any]]):
                 "offers": sorted_offers,
             }
 
-        return {
+        self._last_success = dt_util.now()
+        data = {
             "filters": results_by_filter,
             "total_offers_analyzed": len(all_offers),
             "providers_count": len(self.get_configured_providers()),
+            "last_success": self._last_success.isoformat(),
         }
+        if results_by_filter:
+            await self.store.async_save(data)
+        return data

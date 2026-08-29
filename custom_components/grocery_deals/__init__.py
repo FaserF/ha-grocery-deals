@@ -74,6 +74,7 @@ async def async_setup_entry(
     hass.data.setdefault(DOMAIN, {})
 
     coordinator = GroceryDealsCoordinator(hass, entry)
+    await coordinator.async_load_cache()
     await coordinator.async_config_entry_first_refresh()
 
     hass.data[DOMAIN][entry.entry_id] = coordinator
