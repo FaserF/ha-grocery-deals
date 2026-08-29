@@ -41,9 +41,33 @@ async def async_setup_entry(
         GroceryDealsOverviewSensor(coordinator),
     ]
 
+    active_slugs = set()
     for filter_word in coordinator.product_filters:
-        if filter_word.strip():
-            entities.append(GroceryDealsFilterSensor(coordinator, filter_word.strip()))
+        clean_word = filter_word.strip()
+        if clean_word:
+            entities.append(GroceryDealsFilterSensor(coordinator, clean_word))
+            slug = (
+                re.sub(r"[^a-zA-Z0-9_]+", "_", clean_word.lower()).strip("_") or "deal"
+            )
+            active_slugs.add(f"grocery_deals_filter_{slug}")
+
+    # Reconcile entity registry: purge any filter entities belonging to this entry that are no longer configured
+    from homeassistant.helpers import entity_registry as er
+
+    ent_reg = er.async_get(hass)
+    entry_entities = er.async_entries_for_config_entry(ent_reg, entry.entry_id)
+    for ent in entry_entities:
+        if (
+            ent.domain == "sensor"
+            and ent.unique_id.startswith("grocery_deals_filter_")
+            and ent.unique_id not in active_slugs
+        ):
+            ent_reg.async_remove(ent.entity_id)
+            _LOGGER.debug(
+                "Grocery Deals: Removed stale filter entity %s (unique_id=%s)",
+                ent.entity_id,
+                ent.unique_id,
+            )
 
     async_add_entities(entities, update_before_add=False)
 
