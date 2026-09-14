@@ -24,16 +24,16 @@ def test_parse_price_value():
 
 
 @pytest.mark.asyncio
-async def test_coordinator_aggregation():
+async def test_coordinator_aggregation(hass: HomeAssistant):
     """Test offer collection and price comparison."""
-    hass = MagicMock(spec=HomeAssistant)
     entry = MagicMock()
     entry.data = {
         CONF_PRODUCT_FILTERS: ["Monster Energy", "Butter"],
     }
     entry.options = {}
 
-    coordinator = GroceryDealsCoordinator(hass, entry)
+    with patch("homeassistant.helpers.storage.Store.async_load", return_value=None):
+        coordinator = GroceryDealsCoordinator(hass, entry)
 
     mock_rewe_entry = MagicMock()
     mock_rewe_entry.entry_id = "rewe_1"
@@ -101,3 +101,52 @@ async def test_coordinator_aggregation():
         assert butter_deal["match_count"] == 1
         assert butter_deal["best_price"] == "1,79 €"
         assert butter_deal["best_store"] == "REWE Markt Zorneding"
+
+
+@pytest.mark.asyncio
+async def test_coordinator_aggregation_with_penny(hass: HomeAssistant):
+    """Test offer collection including PENNY digital receipt items."""
+    entry = MagicMock()
+    entry.data = {
+        CONF_PRODUCT_FILTERS: ["Pepsi"],
+    }
+    entry.options = {}
+
+    with patch("homeassistant.helpers.storage.Store.async_load", return_value=None):
+        coordinator = GroceryDealsCoordinator(hass, entry)
+
+    mock_penny_entry = MagicMock()
+    mock_penny_entry.entry_id = "penny_1"
+    mock_penny_entry.title = "PENNY Markt"
+    mock_penny_entry.state = "loaded"
+
+    with patch.object(
+        coordinator,
+        "get_configured_providers",
+        return_value={"penny": [mock_penny_entry]},
+    ):
+        mock_penny_coord = MagicMock()
+        mock_penny_coord.data = {
+            "last_receipt": {
+                "items": [
+                    {
+                        "name": "Pepsi Cola Zero",
+                        "price": 8.94,
+                        "tax_code": "A",
+                        "quantity": 2,
+                        "unit_price": 4.47,
+                    }
+                ]
+            }
+        }
+
+        hass.data = {
+            "penny": {"penny_1": mock_penny_coord},
+        }
+
+        data = await coordinator._async_update_data()
+        assert "filters" in data
+        pepsi_deal = data["filters"]["Pepsi"]
+        assert pepsi_deal["on_sale"] is True
+        assert pepsi_deal["match_count"] == 1
+        assert pepsi_deal["best_store"] == "PENNY Markt"

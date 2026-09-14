@@ -28,6 +28,7 @@
 | Supermarket | Integration & Repository | Features Provided |
 | :--- | :--- | :--- |
 | 🔴 **REWE** | [**ha-rewe**](https://github.com/FaserF/ha-rewe) | Weekly offers, REWE Bonus coupons, recalls |
+| 🔴 **PENNY** | [**ha-penny**](https://github.com/FaserF/ha-penny) | Digital receipts (eBons), PDF item breakdown & loyalty points |
 | 🟡 **EDEKA** | [**ha-edeka**](https://github.com/FaserF/ha-edeka) | Regional market offers & discounts |
 | 🔵 **Lidl** | [**ha-lidl**](https://github.com/FaserF/ha-lidl) | Weekly offers, Lidl Plus coupons, digital receipts |
 | ⚪ **ALDI** | [**ha-aldi**](https://github.com/FaserF/ha-aldi) | ALDI Süd / ALDI Nord weekly flyers & deals |

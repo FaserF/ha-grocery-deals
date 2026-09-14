@@ -136,13 +136,25 @@ class GroceryDealsCoordinator(DataUpdateCoordinator[dict[str, Any]]):
                 if coordinator and getattr(coordinator, "data", None):
                     cdata = coordinator.data
                     if isinstance(cdata, dict):
-                        # REWE, ALDI, EDEKA format
+                        # REWE, ALDI, EDEKA, PENNY format
                         for key in ("discounts", "offers", "bonus_discounts"):
                             for item in cdata.get(key, []):
                                 if isinstance(item, dict):
                                     all_offers.append(
                                         self._normalize_offer(
                                             item, domain, store_label, entry_title
+                                        )
+                                    )
+                                    offers_found = True
+
+                        # PENNY items from last receipt
+                        last_receipt = cdata.get("last_receipt", {})
+                        if isinstance(last_receipt, dict):
+                            for r_item in last_receipt.get("items", []):
+                                if isinstance(r_item, dict):
+                                    all_offers.append(
+                                        self._normalize_offer(
+                                            r_item, domain, store_label, entry_title
                                         )
                                     )
                                     offers_found = True
@@ -157,6 +169,7 @@ class GroceryDealsCoordinator(DataUpdateCoordinator[dict[str, Any]]):
                                             r_item, domain, store_label, entry_title
                                         )
                                     )
+                                    offers_found = True
 
                 # 2. Inspect entity state attributes as fallback
                 if not offers_found:

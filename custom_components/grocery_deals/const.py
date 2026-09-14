@@ -4,7 +4,7 @@ from __future__ import annotations
 
 DOMAIN = "grocery_deals"
 ATTRIBUTION = (
-    "Aggregated from Supermarket integrations (REWE, EDEKA, Lidl, ALDI, Norma)"
+    "Aggregated from Supermarket integrations (REWE, EDEKA, Lidl, ALDI, Norma, PENNY)"
 )
 PLATFORMS = ["sensor"]
 
@@ -25,6 +25,11 @@ SUPPORTED_INTEGRATIONS: dict[str, dict[str, str]] = {
         "name": "REWE",
         "github": "https://github.com/FaserF/ha-rewe",
         "description": "REWE weekly offers & digital coupons",
+    },
+    "penny": {
+        "name": "PENNY",
+        "github": "https://github.com/FaserF/ha-penny",
+        "description": "PENNY digital receipts & purchase history",
     },
     "edeka": {
         "name": "EDEKA",
