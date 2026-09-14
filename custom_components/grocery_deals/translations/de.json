@@ -4,7 +4,7 @@
     "step": {
       "user": {
         "title": "Grocery Deals Supermarkt-Preisvergleich",
-        "description": "Vergleiche Angebote und überwache Aktionspreise über alle konfigurierten Supermarkt-Integrationen hinweg.\n\n### 🛒 Erkannte Supermarkt-Integrationen:\n{detected_integrations}{missing_section}{detected_note}",
+        "description": "Vergleiche Angebote und überwache Aktionspreise über alle konfigurierten Supermarkt-Integrationen hinweg.\n\n### 🛒 Erkannte Supermarkt-Integrationen:\n{detected_integrations}{missing_section}{ignored_section}{detected_note}",
         "data": {
           "product_filters": "Produkt-Suchfilter (z. B. Monster Energy, Butter)",
           "update_interval": "Aktualisierungsintervall (Stunden, min 1, max 24)",
@@ -28,7 +28,7 @@
     "step": {
       "init": {
         "title": "Grocery Deals konfigurieren",
-        "description": "Verwalte deine Suchbegriffe und aktiven Supermarkt-Datenquellen.\n\n### 🛒 Erkannte Supermarkt-Integrationen:\n{detected_integrations}{missing_section}",
+        "description": "Verwalte deine Suchbegriffe und aktiven Supermarkt-Datenquellen.\n\n### 🛒 Erkannte Supermarkt-Integrationen:\n{detected_integrations}{missing_section}{ignored_section}",
         "data": {
           "product_filters": "Produkt-Suchfilter (z. B. Monster Energy, Butter)",
           "update_interval": "Aktualisierungsintervall (Stunden, min 1, max 24)",

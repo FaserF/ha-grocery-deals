@@ -58,7 +58,9 @@ class GroceryDealsCoordinator(DataUpdateCoordinator[dict[str, Any]]):
             CONF_ENABLED_PROVIDERS, list(SUPPORTED_INTEGRATIONS.keys())
         )
 
-        self.store = storage.Store(hass, 1, f"{DOMAIN}_hub")
+        self.store: storage.Store[dict[str, Any]] = storage.Store(
+            hass, 1, f"{DOMAIN}_hub"
+        )
         self._last_success: Any = None
 
         interval_hours = config.get(CONF_UPDATE_INTERVAL, DEFAULT_UPDATE_INTERVAL)
@@ -147,17 +149,7 @@ class GroceryDealsCoordinator(DataUpdateCoordinator[dict[str, Any]]):
                                     )
                                     offers_found = True
 
-                        # PENNY items from last receipt
-                        last_receipt = cdata.get("last_receipt", {})
-                        if isinstance(last_receipt, dict):
-                            for r_item in last_receipt.get("items", []):
-                                if isinstance(r_item, dict):
-                                    all_offers.append(
-                                        self._normalize_offer(
-                                            r_item, domain, store_label, entry_title
-                                        )
-                                    )
-                                    offers_found = True
+
 
                         # Regular catalog products if searched via filter in REWE
                         regular_map = cdata.get("regular_products_by_filter", {})

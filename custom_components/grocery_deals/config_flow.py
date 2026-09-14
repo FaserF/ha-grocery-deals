@@ -30,9 +30,24 @@ from .const import (
     MAX_UPDATE_INTERVAL,
     MIN_UPDATE_INTERVAL,
     SUPPORTED_INTEGRATIONS,
+    UNSUPPORTED_INTEGRATIONS,
 )
 
 _LOGGER = logging.getLogger(__name__)
+
+
+def _build_unsupported_section(hass: Any) -> str:
+    """Build markdown warning section for detected unsupported supermarket integrations."""
+    detected_unsupported: list[str] = [
+        d for d in UNSUPPORTED_INTEGRATIONS if hass.config_entries.async_entries(d)
+    ]
+    if not detected_unsupported:
+        return ""
+    items = "\n".join(
+        f"⚠️ **[{UNSUPPORTED_INTEGRATIONS[d]['name']}]({UNSUPPORTED_INTEGRATIONS[d]['github']})**: {UNSUPPORTED_INTEGRATIONS[d]['reason']}"
+        for d in detected_unsupported
+    )
+    return f"\n\n### ⚠️ Ignored Supermarket Integrations:\n{items}"
 
 
 class GroceryDealsConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
@@ -132,6 +147,8 @@ class GroceryDealsConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             )
             missing_section = f"\n\n### 📦 Missing / Additional Supported Integrations:\n{missing_items}"
 
+        ignored_section = _build_unsupported_section(self.hass)
+
         detected_note = ""
         if len(detected) < 2:
             detected_note = "\n\n*(Note: At least 2 supermarket integrations should be installed and configured for optimal deal comparison.)*"
@@ -174,6 +191,7 @@ class GroceryDealsConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             description_placeholders={
                 "detected_integrations": detected_text,
                 "missing_section": missing_section,
+                "ignored_section": ignored_section,
                 "detected_note": detected_note,
             },
         )
@@ -319,6 +337,8 @@ class GroceryDealsOptionsFlowHandler(config_entries.OptionsFlow):
                 f"\n\n### 📦 Missing Supermarket Integrations:\n{missing_items}"
             )
 
+        ignored_section = _build_unsupported_section(self.hass)
+
         provider_options = {
             d: SUPPORTED_INTEGRATIONS[d]["name"] for d in SUPPORTED_INTEGRATIONS
         }
@@ -370,5 +390,6 @@ class GroceryDealsOptionsFlowHandler(config_entries.OptionsFlow):
             description_placeholders={
                 "detected_integrations": detected_text,
                 "missing_section": missing_section,
+                "ignored_section": ignored_section,
             },
         )

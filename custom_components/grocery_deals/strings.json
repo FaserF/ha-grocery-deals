@@ -4,7 +4,7 @@
     "step": {
       "user": {
         "title": "Grocery Deals Supermarket Aggregator",
-        "description": "Compare deals and track discounts across all your configured supermarket integrations.\n\n### 🛒 Detected Supermarket Integrations:\n{detected_integrations}{missing_section}{detected_note}",
+        "description": "Compare deals and track discounts across all your configured supermarket integrations.\n\n### 🛒 Detected Supermarket Integrations:\n{detected_integrations}{missing_section}{ignored_section}{detected_note}",
         "data": {
           "product_filters": "Product Search Filters (e.g. Monster Energy, Butter)",
           "update_interval": "Update Interval (hours, min 1, max 24)",
@@ -28,7 +28,7 @@
     "step": {
       "init": {
         "title": "Configure Grocery Deals",
-        "description": "Manage your search filters and active supermarket data sources.\n\n### 🛒 Detected Supermarket Integrations:\n{detected_integrations}{missing_section}",
+        "description": "Manage your search filters and active supermarket data sources.\n\n### 🛒 Detected Supermarket Integrations:\n{detected_integrations}{missing_section}{ignored_section}",
         "data": {
           "product_filters": "Product Search Filters (e.g. Monster Energy, Butter)",
           "update_interval": "Update Interval (hours, min 1, max 24)",

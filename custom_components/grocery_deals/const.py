@@ -4,7 +4,7 @@ from __future__ import annotations
 
 DOMAIN = "grocery_deals"
 ATTRIBUTION = (
-    "Aggregated from Supermarket integrations (REWE, EDEKA, Lidl, ALDI, Norma, PENNY)"
+    "Aggregated from Supermarket integrations (REWE, EDEKA, Lidl, ALDI, Norma)"
 )
 PLATFORMS = ["sensor"]
 
@@ -26,11 +26,6 @@ SUPPORTED_INTEGRATIONS: dict[str, dict[str, str]] = {
         "github": "https://github.com/FaserF/ha-rewe",
         "description": "REWE weekly offers & digital coupons",
     },
-    "penny": {
-        "name": "PENNY",
-        "github": "https://github.com/FaserF/ha-penny",
-        "description": "PENNY digital receipts & purchase history",
-    },
     "edeka": {
         "name": "EDEKA",
         "github": "https://github.com/FaserF/ha-edeka",
@@ -50,6 +45,15 @@ SUPPORTED_INTEGRATIONS: dict[str, dict[str, str]] = {
         "name": "Norma",
         "github": "https://github.com/FaserF/ha-norma",
         "description": "Norma weekly discounts & flyer offers",
+    },
+}
+
+# Integrations detected but unsupported/ignored due to lack of structured offers API
+UNSUPPORTED_INTEGRATIONS: dict[str, dict[str, str]] = {
+    "penny": {
+        "name": "PENNY",
+        "github": "https://github.com/FaserF/ha-penny",
+        "reason": "PENNY provides no structured weekly offers REST API (uses third-party brochure reader). Only digital receipt items / leaflet links exist, so it is ignored by Grocery Deals.",
     },
 }
 

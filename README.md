@@ -28,11 +28,13 @@
 | Supermarket | Integration & Repository | Features Provided |
 | :--- | :--- | :--- |
 | 🔴 **REWE** | [**ha-rewe**](https://github.com/FaserF/ha-rewe) | Weekly offers, REWE Bonus coupons, recalls |
-| 🔴 **PENNY** | [**ha-penny**](https://github.com/FaserF/ha-penny) | Digital receipts (eBons), PDF item breakdown & loyalty points |
 | 🟡 **EDEKA** | [**ha-edeka**](https://github.com/FaserF/ha-edeka) | Regional market offers & discounts |
 | 🔵 **Lidl** | [**ha-lidl**](https://github.com/FaserF/ha-lidl) | Weekly offers, Lidl Plus coupons, digital receipts |
 | ⚪ **ALDI** | [**ha-aldi**](https://github.com/FaserF/ha-aldi) | ALDI Süd / ALDI Nord weekly flyers & deals |
 | 🔴 **Norma** | [**ha-norma**](https://github.com/FaserF/ha-norma) | Weekly store discounts & promotional brochures |
+
+> [!NOTE]
+> **PENNY (`ha-penny`)**: Detected in setup/options flows with an advisory notice. Since PENNY has no structured REST API for weekly offers (brochure reader only), it is ignored by Grocery Deals for product price aggregation.
 
 ---
 
