@@ -72,7 +72,10 @@ async def test_config_flow_user_with_penny_warning(hass: HomeAssistant):
     )
     assert result["type"] == data_entry_flow.FlowResultType.FORM
     assert "PENNY" in result["description_placeholders"]["ignored_section"]
-    assert "no structured weekly offers REST API" in result["description_placeholders"]["ignored_section"]
+    assert (
+        "no structured weekly offers REST API"
+        in result["description_placeholders"]["ignored_section"]
+    )
 
 
 @pytest.mark.asyncio

@@ -101,6 +101,3 @@ async def test_coordinator_aggregation(hass: HomeAssistant):
         assert butter_deal["match_count"] == 1
         assert butter_deal["best_price"] == "1,79 €"
         assert butter_deal["best_store"] == "REWE Markt Zorneding"
-
-
-

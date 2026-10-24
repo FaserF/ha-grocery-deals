@@ -149,8 +149,6 @@ class GroceryDealsCoordinator(DataUpdateCoordinator[dict[str, Any]]):
                                     )
                                     offers_found = True
 
-
-
                         # Regular catalog products if searched via filter in REWE
                         regular_map = cdata.get("regular_products_by_filter", {})
                         for _pfilter, reg_items in regular_map.items():
